@@ -1,6 +1,8 @@
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
@@ -8,11 +10,7 @@ public class Main {
         try {
             HashMap<Integer, String> rucksacks;
             rucksacks = importData();
-            System.out.println(rucksacks);
             char[] dupes = dupeFinder(rucksacks);
-//            for (int i = 0; i < dupes.length; i++) {
-//                System.out.println(dupes[i]);
-//            }
             int sum = counter(dupes);
             System.out.println(sum);
         } catch (Exception e) {
@@ -33,63 +31,25 @@ public class Main {
     }
 
     public static char[] dupeFinder(HashMap<Integer, String> rucksacks) {
-        char[] dupes = new char[300];
-        int whereInArray = 0;
-        //have to order them smaller first
+        char[] dupes = new char[rucksacks.size()];
         for (int i = 0; i < 298; i += 3) {
-            boolean breakOut = false;
-            //String container1 = rucksacks.get(i).substring(0, rucksacks.get(i).length() / 2);
-            //String container2 = rucksacks.get(i).substring(rucksacks.get(i).length() / 2);
-            //System.out.println(container1 + " " + container2);
-            String[] orderedElves = new String[3];
-            if (rucksacks.get(i).length() < rucksacks.get(i + 1).length() && rucksacks.get(i).length() < rucksacks.get(i + 2).length()) {
-                orderedElves[0] = rucksacks.get(i);
-                if (rucksacks.get(i + 1).length() < rucksacks.get(i + 2).length()) {
-                    orderedElves[1] = rucksacks.get(i + 1);
-                    orderedElves[2] = rucksacks.get(i + 2);
-                } else {
-                    orderedElves[1] = rucksacks.get(i + 2);
-                    orderedElves[2] = rucksacks.get(i + 1);
-                }
-            } else if (rucksacks.get(i).length() < rucksacks.get(i + 1).length() && rucksacks.get(i).length() > rucksacks.get(i + 2).length()) {
-                orderedElves[1] = rucksacks.get(i);
-                if (rucksacks.get(i + 1).length() < rucksacks.get(i + 2).length()) {
-                    orderedElves[0] = rucksacks.get(i + 1);
-                    orderedElves[2] = rucksacks.get(i + 2);
-                } else {
-                    orderedElves[0] = rucksacks.get(i + 2);
-                    orderedElves[2] = rucksacks.get(i + 1);
-                }
-            } else {
-                orderedElves[2] = rucksacks.get(i);
-                if (rucksacks.get(i + 1).length() < rucksacks.get(i + 2).length()) {
-                    orderedElves[0] = rucksacks.get(i + 1);
-                    orderedElves[1] = rucksacks.get(i + 2);
-                } else {
-                    orderedElves[0] = rucksacks.get(i + 2);
-                    orderedElves[1] = rucksacks.get(i + 1);
-                }
+            HashMap<Character, Integer> rucksack2 = new HashMap<>();
+            HashMap<Character, Integer> rucksack3 = new HashMap<>();
+            String[] orderedSacks = sortSacksBigToSmall(rucksacks.get(i), rucksacks.get(i + 1), rucksacks.get(i + 2));
+            char[] rucksack1 = new char[orderedSacks[0].length()];
+            //not dry, but breaking it into its own method adds another loop :(
+            for (int j = 0; j < orderedSacks[0].length(); j++) {
+                rucksack1[j] = (orderedSacks[0].charAt(j));
             }
-            for (int j = 0; j < orderedElves[0].length(); j++) {
-                for (int k = 0; k < orderedElves[1].length(); k++) {
-                    for (int l = 0; l < orderedElves[2].length(); l++) {
-                        char jChar = orderedElves[0].charAt(j);
-                        char kChar = orderedElves[1].charAt(k);
-                        char lChar = orderedElves[2].charAt(l);
-                        if (jChar == kChar  && kChar == lChar) {
-                            dupes[whereInArray] = lChar;
-                            whereInArray ++;
-                            System.out.println(orderedElves[0]);
-                            breakOut = true;
-                            break;
-                        }
-                    }
-                    if (breakOut) {
-                        break;
-                    }
-                }
-                if (breakOut) {
-                    break;
+            for (int j = 0; j < orderedSacks[1].length(); j++) {
+                rucksack2.put(orderedSacks[1].charAt(j), 1);
+            }
+            for (int j = 0; j < orderedSacks[2].length(); j++) {
+                rucksack3.put(orderedSacks[2].charAt(j), 1);
+            }
+            for (int j = 0; j < rucksack1.length; j ++) {
+                if (rucksack2.containsKey(rucksack1[j]) && rucksack3.containsKey(rucksack1[j])) {
+                    dupes[i] = rucksack1[j];
                 }
             }
         }
@@ -157,4 +117,36 @@ public class Main {
         return sum;
     }
 
+    public static String[] sortSacksBigToSmall(String firstSack, String secondSack, String thirdSack) {
+        String[] orderedSacks = new String[3];
+        if (firstSack.length() > secondSack.length() && firstSack.length() > thirdSack.length()) {
+            orderedSacks[0] = firstSack;
+            if (secondSack.length() > thirdSack.length()) {
+                orderedSacks[1] = secondSack;
+                orderedSacks[2] = thirdSack;
+            } else {
+                orderedSacks[1] = thirdSack;
+                orderedSacks[2] = secondSack;
+            }
+        } else if (secondSack.length() > thirdSack.length()) {
+            orderedSacks[0] = secondSack;
+            if (firstSack.length() > thirdSack.length()) {
+                orderedSacks[1] = firstSack;
+                orderedSacks[2] = thirdSack;
+            } else {
+                orderedSacks[1] = thirdSack;
+                orderedSacks[2] = firstSack;
+            }
+        } else {
+            orderedSacks[0] = thirdSack;
+            if (firstSack.length() > secondSack.length()) {
+                orderedSacks[1] = firstSack;
+                orderedSacks[2] = secondSack;
+            } else {
+                orderedSacks[1] = secondSack;
+                orderedSacks[2] = firstSack;
+            }
+        }
+        return orderedSacks;
+    }
 }
