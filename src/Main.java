@@ -36,9 +36,6 @@ public class Main {
             rucksackPuter(rucksack1, rucksacks.get(orderedSacks[0]));
             rucksackPuter(rucksack2, rucksacks.get(orderedSacks[1]));
             rucksackPuter(rucksack3, rucksacks.get(orderedSacks[2]));
-            System.out.println(rucksack1);
-            System.out.println(rucksack2);
-            System.out.println(rucksack3);
             for (int j = 65; j < 123; j ++) {
                 if (j > 90 && j < 97) {
                     continue;
