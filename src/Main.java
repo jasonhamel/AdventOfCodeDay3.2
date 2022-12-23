@@ -1,8 +1,6 @@
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
@@ -10,9 +8,7 @@ public class Main {
         try {
             HashMap<Integer, String> rucksacks;
             rucksacks = importData();
-            char[] dupes = dupeFinder(rucksacks);
-            int sum = counter(dupes);
-            System.out.println(sum);
+            System.out.println(dupeFinder(rucksacks));
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -30,123 +26,73 @@ public class Main {
         return rucksacks;
     }
 
-    public static char[] dupeFinder(HashMap<Integer, String> rucksacks) {
-        char[] dupes = new char[rucksacks.size()];
-        for (int i = 0; i < 298; i += 3) {
-            HashMap<Character, Integer> rucksack2 = new HashMap<>();
-            HashMap<Character, Integer> rucksack3 = new HashMap<>();
-            String[] orderedSacks = sortSacksBigToSmall(rucksacks.get(i), rucksacks.get(i + 1), rucksacks.get(i + 2));
-            char[] rucksack1 = new char[orderedSacks[0].length()];
-            //not dry, but breaking it into its own method adds another loop :(
-            for (int j = 0; j < orderedSacks[0].length(); j++) {
-                rucksack1[j] = (orderedSacks[0].charAt(j));
-            }
-            for (int j = 0; j < orderedSacks[1].length(); j++) {
-                rucksack2.put(orderedSacks[1].charAt(j), 1);
-            }
-            for (int j = 0; j < orderedSacks[2].length(); j++) {
-                rucksack3.put(orderedSacks[2].charAt(j), 1);
-            }
-            for (int j = 0; j < rucksack1.length; j ++) {
-                if (rucksack2.containsKey(rucksack1[j]) && rucksack3.containsKey(rucksack1[j])) {
-                    dupes[i] = rucksack1[j];
-                }
-            }
-        }
-        return dupes;
-    }
-
-    public static int counter(char[] dupes) {
+    public static int dupeFinder(HashMap<Integer, String> rucksacks) {
         int sum = 0;
-        for (int i = 0; i < dupes.length; i++) {
-            switch (dupes[i]) {
-                case 'a':  sum += 1; break;
-                case 'b':  sum += 2; break;
-                case 'c':  sum += 3; break;
-                case 'd':  sum += 4; break;
-                case 'e':  sum += 5; break;
-                case 'f':  sum += 6; break;
-                case 'g':  sum += 7; break;
-                case 'h':  sum += 8; break;
-                case 'i':  sum += 9; break;
-                case 'j':  sum += 10; break;
-                case 'k':  sum += 11; break;
-                case 'l':  sum += 12; break;
-                case 'm':  sum += 13; break;
-                case 'n':  sum += 14; break;
-                case 'o':  sum += 15; break;
-                case 'p':  sum += 16; break;
-                case 'q':  sum += 17; break;
-                case 'r':  sum += 18; break;
-                case 's':  sum += 19; break;
-                case 't':  sum += 20; break;
-                case 'u':  sum += 21; break;
-                case 'v':  sum += 22; break;
-                case 'w':  sum += 23; break;
-                case 'x':  sum += 24; break;
-                case 'y':  sum += 25; break;
-                case 'z':  sum += 26; break;
-                case 'A':  sum += 27; break;
-                case 'B':  sum += 28; break;
-                case 'C':  sum += 29; break;
-                case 'D':  sum += 30 ;break;
-                case 'E':  sum += 31; break;
-                case 'F':  sum += 32; break;
-                case 'G':  sum += 33; break;
-                case 'H':  sum += 34; break;
-                case 'I':  sum += 35; break;
-                case 'J':  sum += 36; break;
-                case 'K':  sum += 37; break;
-                case 'L':  sum += 38; break;
-                case 'M':  sum += 39; break;
-                case 'N':  sum += 40; break;
-                case 'O':  sum += 41; break;
-                case 'P':  sum += 42; break;
-                case 'Q':  sum += 43; break;
-                case 'R':  sum += 44; break;
-                case 'S':  sum += 45; break;
-                case 'T':  sum += 46; break;
-                case 'U':  sum += 47; break;
-                case 'V':  sum += 48; break;
-                case 'W':  sum += 49; break;
-                case 'X':  sum += 50; break;
-                case 'Y':  sum += 51; break;
-                case 'Z':  sum += 52; break;
+        for (int i = 0; i < 298; i += 3) {
+            HashMap<Character, Character> rucksack1 = new HashMap<>();
+            HashMap<Character, Character> rucksack2 = new HashMap<>();
+            HashMap<Character, Character> rucksack3 = new HashMap<>();
+            int[] orderedSacks = sortSacksBigToSmall(i, rucksacks);
+            rucksackPuter(rucksack1, rucksacks.get(orderedSacks[0]));
+            rucksackPuter(rucksack2, rucksacks.get(orderedSacks[1]));
+            rucksackPuter(rucksack3, rucksacks.get(orderedSacks[2]));
+            System.out.println(rucksack1);
+            System.out.println(rucksack2);
+            System.out.println(rucksack3);
+            for (int j = 65; j < 123; j ++) {
+                if (j > 90 && j < 97) {
+                    continue;
+                }
+                char c = (char) j;
+                if (rucksack1.containsValue(c) && rucksack2.containsValue(c) && rucksack3.containsValue(c)) {
+                    if (Character.isUpperCase(c)) {
+                        sum += j - 38;
+                    } else {
+                        sum += j - 96;
+                    }
+                    break;
+                }
             }
         }
         return sum;
     }
 
-    public static String[] sortSacksBigToSmall(String firstSack, String secondSack, String thirdSack) {
-        String[] orderedSacks = new String[3];
-        if (firstSack.length() > secondSack.length() && firstSack.length() > thirdSack.length()) {
-            orderedSacks[0] = firstSack;
-            if (secondSack.length() > thirdSack.length()) {
-                orderedSacks[1] = secondSack;
-                orderedSacks[2] = thirdSack;
+    public static int[] sortSacksBigToSmall(int i, HashMap<Integer, String> rucksacks) {
+        int[] orderedSacks = new int[3];
+        if (rucksacks.get(i).length() > rucksacks.get(i + 1).length() && rucksacks.get(i).length() > rucksacks.get(i + 2).length()) {
+            orderedSacks[0] = i;
+            if (rucksacks.get(i + 1).length() > rucksacks.get(i + 2).length()) {
+                orderedSacks[1] = i + 1;
+                orderedSacks[2] = i + 2;
             } else {
-                orderedSacks[1] = thirdSack;
-                orderedSacks[2] = secondSack;
+                orderedSacks[1] = i + 2;
+                orderedSacks[2] = i + 1;
             }
-        } else if (secondSack.length() > thirdSack.length()) {
-            orderedSacks[0] = secondSack;
-            if (firstSack.length() > thirdSack.length()) {
-                orderedSacks[1] = firstSack;
-                orderedSacks[2] = thirdSack;
+        } else if (rucksacks.get(i + 1).length() > rucksacks.get(i + 2).length()) {
+            orderedSacks[0] = i + 1;
+            if (rucksacks.get(i).length() > rucksacks.get(i + 2).length()) {
+                orderedSacks[1] = i;
+                orderedSacks[2] = i + 2;
             } else {
-                orderedSacks[1] = thirdSack;
-                orderedSacks[2] = firstSack;
+                orderedSacks[1] = i + 2;
+                orderedSacks[2] = i;
             }
         } else {
-            orderedSacks[0] = thirdSack;
-            if (firstSack.length() > secondSack.length()) {
-                orderedSacks[1] = firstSack;
-                orderedSacks[2] = secondSack;
+            orderedSacks[0] = i + 2;
+            if (rucksacks.get(i).length() > rucksacks.get(i + 1).length()) {
+                orderedSacks[1] = i;
+                orderedSacks[2] = i + 1;
             } else {
-                orderedSacks[1] = secondSack;
-                orderedSacks[2] = firstSack;
+                orderedSacks[1] = i + 1;
+                orderedSacks[2] = i;
             }
         }
         return orderedSacks;
+    }
+
+    public static void rucksackPuter(HashMap<Character, Character> currentRucksack, String stringOfSack) {
+        for (int j = 0; j < stringOfSack.length(); j++) {
+            currentRucksack.put(stringOfSack.charAt(j), stringOfSack.charAt(j));
+        }
     }
 }
